@@ -7,7 +7,7 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="16dp"
-    tools:context="cs213.photoalbum.Home">
+    tools:context="cs213.androidproject38.Home">
 
 
     <ListView
@@ -16,6 +16,7 @@
         android:id="@+id/AlbumListView"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:clickable="false" />
