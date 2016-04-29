@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import java.io.File;
 
 public class ViewImage extends AppCompatActivity {
-
+    //Test
     ImageView iv3;
 
     @Override
