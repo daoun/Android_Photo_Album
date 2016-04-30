@@ -62,7 +62,7 @@ public class Photos extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
 
             convertView = getLayoutInflater().inflate(R.layout.single_grid, parent, false);
-            ImageView iv = (ImageView) convertView.findViewById(R.id.imageView);
+            ImageView iv = (ImageView) convertView.findViewById(R.id.imageView2);
 
             iv.setImageURI(Uri.parse(getItem(position).toString()));
 
