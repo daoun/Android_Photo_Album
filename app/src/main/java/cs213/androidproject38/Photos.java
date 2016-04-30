@@ -1,6 +1,9 @@
 package cs213.androidproject38;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.NavUtils;
@@ -13,14 +16,21 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class Photos extends AppCompatActivity {
 
     GridView gv;
     ArrayList<File> list;
+    public static final int IMAGE_GALLERY_REQUEST = 20;
+
+    private ImageView imgPicture;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +50,9 @@ public class Photos extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), ViewImage.class).putExtra("img",list.get(position)));
             }
         });
+
+
+        //imgPicture = (ImageView) findViewById(R.id.addPhotoAction);
 
     }
 
@@ -76,13 +89,56 @@ public class Photos extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+
     public void addPhoto(){
         openGallery();
         System.out.println();
     }
 
     public void openGallery(){
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
 
+        File pdir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        String pdirpath = pdir.getPath();
+        Uri data = Uri.parse(pdirpath);
+
+        photoPickerIntent.setDataAndType(data, "image/*");
+
+        startActivityForResult(photoPickerIntent, IMAGE_GALLERY_REQUEST);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK){
+            //if we are here, everything processed successfully
+            if(requestCode == IMAGE_GALLERY_REQUEST){
+                //if we are here, we are hearing back from the image gallery
+
+                //address of image in sdcard
+                Uri imageUri = data.getData();
+
+                // declare a stream to read the image data from sdcard
+                InputStream inputStream;
+
+                try {
+                    inputStream = getContentResolver().openInputStream(imageUri);
+
+                    //get a bitmap from the stream
+                    Bitmap image = BitmapFactory.decodeStream(inputStream);
+
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Unable to open image.", Toast.LENGTH_LONG).show();
+                }
+
+
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     class GridAdapter extends BaseAdapter{
