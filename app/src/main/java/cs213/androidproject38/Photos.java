@@ -1,183 +1,85 @@
 package cs213.androidproject38;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
-import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.GridView;
+import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 public class Photos extends AppCompatActivity {
 
-    GridView gv;
-    ArrayList<File> list;
     public static final int IMAGE_GALLERY_REQUEST = 20;
-
-    private ImageView imgPicture;
-
-    //
-
-    private static final int SELECT_SINGLE_PICTURE = 101;
-
-    private static final int SELECT_MULTIPLE_PICTURE = 201;
-
-    public static final String IMAGE_TYPE = "image/*";
-
-    private ImageView selectedImagePreview;
-
-    //
+    public static int currAlbum;
+    private GridLayout thumbnailsGL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photos);
-
-        View addBtn = findViewById(R.id.addPhotoAction);
-
-        // no need to cast to button view here since we can add a listener to any view, this
-        // is the single image selection
-        findViewById(R.id.addPhotoAction).setOnClickListener(new Button.OnClickListener() {
-
-            public void onClick(View arg0) {
-
-                // in onCreate or any event where your want the user to
-                // select a file
-                Intent intent = new Intent();
-                intent.setType(IMAGE_TYPE);
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent,
-                        "Select Picture"), SELECT_SINGLE_PICTURE);
-            }
-        });
-
-        selectedImagePreview = (ImageView)findViewById(R.id.imageView4);
-
-       /*
-        System.out.println(Environment.getExternalStorageDirectory().toString());
-
-        list = imageReader(Environment.getExternalStorageDirectory());
-
-        gv = (GridView) findViewById(R.id.gridView);
-        gv.setAdapter(new GridAdapter());
-
-        gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(getApplicationContext(), ViewImage.class).putExtra("img",list.get(position)));
-            }
-        });
-
-        */
-
-
-        //imgPicture = (ImageView) findViewById(R.id.addPhotoAction);
+        setContentView(R.layout.activity_photos2);
+        thumbnailsGL = (GridLayout) findViewById(R.id.thumbnails);
 
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == SELECT_SINGLE_PICTURE) {
 
-                Uri selectedImageUri = data.getData();
-                try {
-                    selectedImagePreview.setImageBitmap(new UserPicture(selectedImageUri, getContentResolver()).getBitmap());
-                } catch (IOException e) {
-                    Log.e(Photos.class.getSimpleName(), "Failed to load image", e);
-                }
-                // original code
-//                String selectedImagePath = getPath(selectedImageUri);
-//                selectedImagePreview.setImageURI(selectedImageUri);
-            }
-            else if (requestCode == SELECT_MULTIPLE_PICTURE) {
-                //And in the Result handling check for that parameter:
-                if (Intent.ACTION_SEND_MULTIPLE.equals(data.getAction())
-                        && data.hasExtra(Intent.EXTRA_STREAM)) {
-                    // retrieve a collection of selected images
-                    ArrayList<Parcelable> list = data.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-                    // iterate over these images
-                    if( list != null ) {
-                        for (Parcelable parcel : list) {
-                            Uri uri = (Uri) parcel;
-                            // handle the images one by one here
-                        }
-                    }
+    /**
+     * adds photo to the grid layout
+     * @param image
+     */
+    public void addPhotoToGL(Bitmap image){
+        ImageView iv = new ImageView(this);
 
-                    // for now just show the last picture
-                    if( !list.isEmpty() ) {
-                        Uri imageUri = (Uri) list.get(list.size() - 1);
+        iv.setImageBitmap(image);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(265,265);
+        iv.setLayoutParams(lp);
+        iv.setPadding(15, 15, 15, 15);
+        thumbnailsGL.addView(iv);
 
-                        try {
-                            selectedImagePreview.setImageBitmap(new UserPicture(imageUri, getContentResolver()).getBitmap());
-                        } catch (IOException e) {
-                            Log.e(Photos.class.getSimpleName(), "Failed to load image", e);
-                        }
-                        // original code
-//                        String selectedImagePath = getPath(imageUri);
-//                        selectedImagePreview.setImageURI(imageUri);
-//                        displayPicture(selectedImagePath, selectedImagePreview);
-                    }
-                }
-            }
-        } else {
-            // report failure
-            Toast.makeText(getApplicationContext(), "Failed to get intent data", Toast.LENGTH_LONG).show();
-            Log.d(Photos.class.getSimpleName(), "Failed to get intent data, result code is " + resultCode);
-        }
+        // add photo to array list
+        Photo pic = new Photo(image);
+        Home.albumList.get(currAlbum).addPhoto(pic);
     }
 
     /**
-     * helper to retrieve the path of an image URI
+     * called when add photo action button is clicked
      */
-    public String getPath(Uri uri) {
-
-        // just some safety built in
-        if( uri == null ) {
-            // perform some logging or show user feedback
-            Toast.makeText(getApplicationContext(), "Failed to get image", Toast.LENGTH_LONG).show();
-            Log.d(Photos.class.getSimpleName(), "Failed to parse image path from image URI " + uri);
-            return null;
-        }
-
-        // try to retrieve the image from the media store first
-        // this will only work for images selected from gallery
-        String[] projection = { MediaStore.Images.Media.DATA };
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
-        if( cursor != null ){
-            int column_index = cursor
-                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        }
-        // this is our fallback here, thanks to the answer from @mad indicating this is needed for
-        // working code based on images selected using other file managers
-        return uri.getPath();
+    public void addPhotoAction(){
+        openGallery();
+        System.out.println();
     }
+
+    /**
+     * opens the photo gallery
+     */
+    public void openGallery(){
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+
+        File pdir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        String pdirpath = pdir.getPath();
+        Uri data = Uri.parse(pdirpath);
+
+        photoPickerIntent.setDataAndType(data, "image/*");
+
+        startActivityForResult(photoPickerIntent, IMAGE_GALLERY_REQUEST);
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_home, menu);
+        getMenuInflater().inflate(R.menu.menu_photos, menu);
         return true;
     }
 
@@ -191,7 +93,7 @@ public class Photos extends AppCompatActivity {
                 return true;
 
             case R.id.addPhotoAction:
-                addPhoto();
+                addPhotoAction();
                 return true;
 
             case R.id.movePhotoAction:
@@ -208,109 +110,28 @@ public class Photos extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-
-    public void addPhoto(){
-        openGallery();
-        System.out.println();
-    }
-
-    public void openGallery(){
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-
-        File pdir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        String pdirpath = pdir.getPath();
-        Uri data = Uri.parse(pdirpath);
-
-        photoPickerIntent.setDataAndType(data, "image/*");
-
-        startActivityForResult(photoPickerIntent, IMAGE_GALLERY_REQUEST);
-
-    }
-    /*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_OK){
-            //if we are here, everything processed successfully
-            if(requestCode == IMAGE_GALLERY_REQUEST){
-                //if we are here, we are hearing back from the image gallery
+        if(resultCode == RESULT_OK){ //if we are here, everything processed successfully
+            if(requestCode == IMAGE_GALLERY_REQUEST){//if we are here, we are hearing back from the image gallery
 
-                //address of image in sdcard
-                Uri imageUri = data.getData();
-
-                // declare a stream to read the image data from sdcard
-                InputStream inputStream;
+                Uri imageUri = data.getData(); //address of image in sdcard
+                InputStream inputStream; // declare a stream to read the image data from sdcard
 
                 try {
+                    //System.out.println("IMAGE URI" + imageUri);
                     inputStream = getContentResolver().openInputStream(imageUri);
-
-                    //get a bitmap from the stream
                     Bitmap image = BitmapFactory.decodeStream(inputStream);
-
+                    addPhotoToGL(image);
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                     Toast.makeText(this, "Unable to open image.", Toast.LENGTH_LONG).show();
                 }
-
-
             }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
-    }
-    */
-
-    class GridAdapter extends BaseAdapter{
-
-        @Override
-        public int getCount() {
-            return list.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return list.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            convertView = getLayoutInflater().inflate(R.layout.single_grid, parent, false);
-            ImageView iv = (ImageView) convertView.findViewById(R.id.imageView2);
-
-            //iv.setImageURI(Uri.parse(getItem(position).toString()));
-
-            return convertView;
-        }
-    }
-
-    ArrayList<File> imageReader(File root) {
-
-        ArrayList<File> a = new ArrayList<>();
-
-        File[] files = root.listFiles();
-
-        if(files == null){
-            return a;
-        }
-
-        for(int i = 0; i < files.length; i++){
-            if(files[i].isDirectory()){
-                a.addAll(imageReader(files[i]));
-            }else{
-                if(files[i].getName().endsWith(".jpg")){
-                    a.add(files[i]);
-                }
-            }
-        }
-
-        return a;
     }
 
 

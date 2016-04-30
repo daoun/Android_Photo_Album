@@ -1,5 +1,7 @@
 package cs213.androidproject38;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,12 +14,12 @@ public class Photo implements Serializable {
 
     private static final long serialVersionUID = 2651057460302515220L;
     private List<String> taglist = new ArrayList<String>();;
-    private String url;
+    private Bitmap url;
     private String caption;
     private Date date;
 
-    public Photo(String caption){
-        this.caption = caption;
+    public Photo(Bitmap url){
+        this.url = url;
     }
 
     public String getCaption() {
@@ -37,10 +39,10 @@ public class Photo implements Serializable {
         return taglist.size();
     }
 
-    public String getURL() {
+    public Bitmap getURL() {
         return url;
     }
-    public void setURL(String url) {
+    public void setURL(Bitmap url) {
         this.url = url;
     }
 

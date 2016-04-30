@@ -201,6 +201,7 @@ public class Home extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selected = position;
+                Photos.currAlbum = position;
                 Intent myIntent = new Intent(Home.this, Thumbnail.class);
                 Home.this.startActivity(myIntent);
             }

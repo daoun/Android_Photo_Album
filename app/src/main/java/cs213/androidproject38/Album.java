@@ -19,7 +19,7 @@ public class Album implements Serializable {
         this.name = name;
         //String base = System.getProperty("user.dir");
 
-        coverPhoto = "../../../res/drawable/no_photo.png";
+        //coverPhoto = "../../../res/drawable/no_photo.png";
 
         //String relative = new File(base).toURI().relativize(new File(path).toURI()).getPath();
 
