@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <item
+        android:id="@+id/addPhotoAction"
+        android:icon="@mipmap/add_btn_image"
+        android:title="add"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/movePhotoAction"
+        android:icon="@mipmap/menu_btn_image"
+        android:title="move"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/tagPhotoAction"
+        android:icon="@mipmap/menu_btn_image"
+        android:title="tag"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/deletePhotoAction"
+        android:icon="@mipmap/menu_btn_image"
+        android:title="delete"
+        app:showAsAction="never" />
+
+</menu>

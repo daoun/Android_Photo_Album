@@ -1,10 +1,12 @@
 package cs213.androidproject38;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -41,6 +43,48 @@ public class Photos extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+
+            case R.id.addPhotoAction:
+                addPhoto();
+                return true;
+
+            case R.id.movePhotoAction:
+                return true;
+
+            case R.id.deletePhotoAction:
+                return true;
+
+            case R.id.tagPhotoAction:
+                return true;
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void addPhoto(){
+        openGallery();
+        System.out.println();
+    }
+
+    public void openGallery(){
+
+    }
+
     class GridAdapter extends BaseAdapter{
 
         @Override
@@ -64,7 +108,7 @@ public class Photos extends AppCompatActivity {
             convertView = getLayoutInflater().inflate(R.layout.single_grid, parent, false);
             ImageView iv = (ImageView) convertView.findViewById(R.id.imageView);
 
-            iv.setImageURI(Uri.parse(getItem(position).toString()));
+            //iv.setImageURI(Uri.parse(getItem(position).toString()));
 
             return convertView;
         }

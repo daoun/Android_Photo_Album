@@ -19,8 +19,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Photos" />
-        <activity android:name=".ViewImage"></activity>
+        <activity
+            android:name=".Photos"
+            android:label="Photos"
+            android:parentActivityName=".Home">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Home" />
+        </activity>
+        <activity
+            android:name=".ViewImage"
+            android:label="Image View"
+            android:parentActivityName=".Photos">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Photos" />
+        </activity>
     </application>
 
 </manifest>

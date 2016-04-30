@@ -5,17 +5,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +32,45 @@ public class Home extends AppCompatActivity {
     private Context context = this;
     public int selected = -1;
 
+    private MenuInflater menuInflater;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_home,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch(item.getItemId()) {
+
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+
+            case R.id.addAlbumAction:
+                promptAdd();
+                return true;
+
+            case R.id.editAlbumAction:
+                onEdit();
+                return true;
+
+            case R.id.deleteAlbumAction:
+                onDelete();
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+        setTitle("Albums");
         albumLV = (ListView) findViewById(R.id.AlbumListView);
         albumLV.setItemsCanFocus(false);
 
@@ -52,38 +86,6 @@ public class Home extends AppCompatActivity {
             }
         });
 
-        ActionBar mActionBar = getSupportActionBar();
-        mActionBar.setDisplayShowHomeEnabled(false);
-        mActionBar.setDisplayShowTitleEnabled(false);
-        LayoutInflater mInflater = LayoutInflater.from(this);
-
-
-
-        View mCustomView = mInflater.inflate(R.layout.custom_actionbar, null);
-        TextView mTitleTextView = (TextView) mCustomView.findViewById(R.id.titleTV);
-        mTitleTextView.setText("Albums");
-
-
-        ImageButton addIB = (ImageButton) mCustomView.findViewById(R.id.addIB);
-        addIB.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                promptAdd();
-            }
-        });
-
-        ImageButton editIB = (ImageButton) mCustomView.findViewById(R.id.editIB);
-        editIB.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                onEdit();
-            }
-        });
-
-        mActionBar.setCustomView(mCustomView);
-        mActionBar.setDisplayShowCustomEnabled(true);
 
     }
 
@@ -131,12 +133,27 @@ public class Home extends AppCompatActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //String s = view.toString();
+                //System.out.println(s);
+                changeAlbumName();
+                albumOpen();
+
+            }
+        });
+    }
+
+
+    public void onDelete(){
+        albumLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 System.out.println("Clicked position" + position);
                 selected = position;
                 AlertDialog.Builder editPrompt = new AlertDialog.Builder(context);
-                editPrompt.setTitle("Edit Album");
-                editPrompt.setMessage("Do you want to edit or delete album?");
+                editPrompt.setTitle("Delete Album");
+                editPrompt.setMessage("Do you want to delete album?");
 
 
                 // Set up the buttons
@@ -146,13 +163,6 @@ public class Home extends AppCompatActivity {
                         albumList.remove(selected);
                         albumNameList.remove(selected);
                         adapter.notifyDataSetChanged();
-                        albumOpen();
-                    }
-                });
-                editPrompt.setNegativeButton("EDIT", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        changeAlbumName();
                         albumOpen();
                     }
                 });
@@ -193,6 +203,7 @@ public class Home extends AppCompatActivity {
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setPadding(40, 25, 40, 25);
+        //input.setText(oldName);
 
 
         prompt.setView(input);
