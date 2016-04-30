@@ -15,4 +15,10 @@
         android:id="@+id/gridView"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/imageView4" />
+
 </RelativeLayout>
