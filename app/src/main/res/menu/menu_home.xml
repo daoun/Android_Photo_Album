@@ -7,11 +7,11 @@
         android:id="@+id/addAlbumAction"
         android:icon="@mipmap/add_album_btn_image"
         android:title="add"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/editAlbumAction"
-        android:title="edit"
+        android:title="rename"
         app:showAsAction="never" />
 
     <item

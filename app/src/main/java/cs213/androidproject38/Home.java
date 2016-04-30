@@ -17,6 +17,9 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +28,7 @@ public class Home extends AppCompatActivity {
 
     private ListView albumLV;
     private String name;
-    private List<Album> albumList = new ArrayList<>();
+    public static List<Album> albumList = new ArrayList<>();
 
     private List<String> albumNameList = new ArrayList<>();
     private ArrayAdapter<String> adapter ;
@@ -73,6 +76,16 @@ public class Home extends AppCompatActivity {
         setTitle("Albums");
         albumLV = (ListView) findViewById(R.id.AlbumListView);
         albumLV.setItemsCanFocus(false);
+
+        try {
+            FileOutputStream fileOut = new FileOutputStream("users.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(new ArrayList<Album>(albumList));
+            //out.close();
+            //fileOut.close();
+        }catch(IOException i){
+            i.printStackTrace();
+        }
 
         albumOpen();
 
@@ -133,15 +146,15 @@ public class Home extends AppCompatActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //String s = view.toString();
-                //System.out.println(s);
-                changeAlbumName();
+                selected = position;
+                String s = albumLV.getItemAtPosition(position).toString();
+                System.out.println(s);
+                changeAlbumName(s);
                 albumOpen();
 
             }
         });
     }
-
 
     public void onDelete(){
         albumLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -194,7 +207,7 @@ public class Home extends AppCompatActivity {
         });
     }
 
-    public void changeAlbumName(){
+    public void changeAlbumName(String oldName){
         AlertDialog.Builder prompt = new AlertDialog.Builder(this);
         prompt.setTitle("Edit Album Name");
         prompt.setMessage("Modify the name of the album.");
@@ -203,7 +216,7 @@ public class Home extends AppCompatActivity {
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setPadding(40, 25, 40, 25);
-        //input.setText(oldName);
+        input.setText(oldName);
 
 
         prompt.setView(input);
