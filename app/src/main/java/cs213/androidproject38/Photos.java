@@ -47,7 +47,6 @@ public class Photos extends AppCompatActivity {
         setContentView(R.layout.activity_photos);
         thumbnailGV = (GridView) findViewById(R.id.thumbnails);
         setTitle(Home.albumList.get(currAlbum).getName());
-        int size = Home.albumList.get(currAlbum).getPhotolistSize();
         photolist = (ArrayList<Photo>) Home.albumList.get(currAlbum).getPhotolist();
 
         adapter = new ImageAdapter<>(this, 1, photolist);
