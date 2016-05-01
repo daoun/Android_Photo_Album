@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+
+    <item
+        android:id="@+id/addPersonTagAction"
+        android:icon="@mipmap/move_btn_image"
+        android:title="add person tag"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/addLocationTagAction"
+        android:icon="@mipmap/move_btn_image"
+        android:title="add location tag"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/deleteTagAction"
+        android:icon="@mipmap/delete_btn_image"
+        android:title="delete tag"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/displayInfoAction"
+        android:icon="@mipmap/move_btn_image"
+        android:title="display info"
+        app:showAsAction="never" />
+
+
+
+
+
+</menu>

@@ -51,18 +51,7 @@ public class Photos extends AppCompatActivity {
 
         adapter = new ImageAdapter<>(this, 1, photolist);
         thumbnailGV.setAdapter(adapter);
-        thumbnailGV.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selected = position;
-                System.out.println("SELECTED="+selected);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        photoOpenListener();
 
 
     }
@@ -97,6 +86,17 @@ public class Photos extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void photoOpenListener() {
+        thumbnailGV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selected = position;
+                ViewImage.currPhoto = position;
+                //System.out.println("POSITION = " + position);
+                startActivity(new Intent(getApplicationContext(), ViewImage.class));
+            }
+        });
+    }
     public void movePhotoAction(){
 
     }
@@ -118,6 +118,7 @@ public class Photos extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         photolist.remove(selected);
                         adapter.notifyDataSetChanged();
+                        photoOpenListener();
                     }
                 });
 
@@ -125,7 +126,7 @@ public class Photos extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
-
+                        photoOpenListener();
                     }
                 });
 
@@ -134,22 +135,6 @@ public class Photos extends AppCompatActivity {
         });
     }
 
-    /**
-     * adds photo to the grid layout
-     * @param image
-     */
-    public void addPhotoToGV(Bitmap image) {
-        ImageView iv = new ImageView(this);
-
-        iv.setImageBitmap(image);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(265, 265);
-        // iv.setLayoutParams(lp);
-        iv.setPadding(15, 15, 15, 15);
-
-
-        thumbnailGV.addView(iv, lp);
-        // thumbnailGV.addView(iv);
-    }
 
     /**
      * called when add photo action button is clicked
@@ -237,4 +222,21 @@ public class Photos extends AppCompatActivity {
 
     }
 
+    /**
+     * adds photo to the grid layout
+     * @param image
+     */
+ /*   public void addPhotoToGV(Bitmap image) {
+        ImageView iv = new ImageView(this);
+
+        iv.setImageBitmap(image);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(265, 265);
+        // iv.setLayoutParams(lp);
+        iv.setPadding(15, 15, 15, 15);
+
+
+        thumbnailGV.addView(iv, lp);
+        // thumbnailGV.addView(iv);
+    }
+*/
 }
