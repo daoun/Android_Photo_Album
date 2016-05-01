@@ -28,8 +28,14 @@ public class Photos extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photos2);
+        setContentView(R.layout.activity_photos);
         thumbnailsGL = (GridLayout) findViewById(R.id.thumbnails);
+        setTitle(Home.albumList.get(currAlbum).getName());
+        int size = Home.albumList.get(currAlbum).getPhotolistSize();
+
+        for(int i = 0; i < size; i++){
+            addPhotoToGL(Home.albumList.get(currAlbum).getPhotolist().get(i).getURL());
+        }
 
     }
 
@@ -47,10 +53,9 @@ public class Photos extends AppCompatActivity {
         iv.setPadding(15, 15, 15, 15);
         thumbnailsGL.addView(iv);
 
-        // add photo to array list
-        Photo pic = new Photo(image);
-        Home.albumList.get(currAlbum).addPhoto(pic);
+
     }
+
 
     /**
      * called when add photo action button is clicked
@@ -102,8 +107,6 @@ public class Photos extends AppCompatActivity {
             case R.id.deletePhotoAction:
                 return true;
 
-            case R.id.tagPhotoAction:
-                return true;
 
         }
 
@@ -123,6 +126,9 @@ public class Photos extends AppCompatActivity {
                     inputStream = getContentResolver().openInputStream(imageUri);
                     Bitmap image = BitmapFactory.decodeStream(inputStream);
                     addPhotoToGL(image);
+                    // add photo to array list
+                    Photo pic = new Photo(image);
+                    Home.albumList.get(currAlbum).addPhoto(pic);
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();

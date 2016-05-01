@@ -11,19 +11,13 @@
 
     <item
         android:id="@+id/movePhotoAction"
-        android:icon="@mipmap/menu_btn_image"
+        android:icon="@mipmap/move_btn_image"
         android:title="move"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/tagPhotoAction"
-        android:icon="@mipmap/menu_btn_image"
-        android:title="tag"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/deletePhotoAction"
-        android:icon="@mipmap/menu_btn_image"
+        android:icon="@mipmap/delete_btn_image"
         android:title="delete"
         app:showAsAction="never" />
 

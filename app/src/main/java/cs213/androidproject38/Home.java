@@ -17,9 +17,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +27,7 @@ public class Home extends AppCompatActivity {
     private String name;
     public static List<Album> albumList = new ArrayList<>();
 
-    private List<String> albumNameList = new ArrayList<>();
+    private static List<String> albumNameList = new ArrayList<>();
     private ArrayAdapter<String> adapter ;
     private Context context = this;
     public int selected = -1;
@@ -77,27 +74,13 @@ public class Home extends AppCompatActivity {
         albumLV = (ListView) findViewById(R.id.AlbumListView);
         albumLV.setItemsCanFocus(false);
 
-        try {
-            FileOutputStream fileOut = new FileOutputStream("users.ser");
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(new ArrayList<Album>(albumList));
-            //out.close();
-            //fileOut.close();
-        }catch(IOException i){
-            i.printStackTrace();
-        }
+
 
         albumOpen();
 
-        adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.album_row_simple, R.id.albumNameTV, albumNameList);
+        adapter = new ArrayAdapter<>(getApplication(), R.layout.album_row_simple, R.id.albumNameTV, albumNameList);
         albumLV.setAdapter(adapter);
-
-        albumLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(getApplicationContext(), Photos.class));
-            }
-        });
+        adapter.notifyDataSetChanged();
 
 
     }
@@ -168,7 +151,6 @@ public class Home extends AppCompatActivity {
                 editPrompt.setTitle("Delete Album");
                 editPrompt.setMessage("Do you want to delete album?");
 
-
                 // Set up the buttons
                 editPrompt.setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
                     @Override
@@ -189,21 +171,18 @@ public class Home extends AppCompatActivity {
                 });
 
                 editPrompt.show();
-
             }
-
         });
     }
 
     public void albumOpen() {
         albumLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selected = position;
                 Photos.currAlbum = position;
-                Intent myIntent = new Intent(Home.this, Thumbnail.class);
-                Home.this.startActivity(myIntent);
+                System.out.println("POSITION = " + position);
+                startActivity(new Intent(getApplicationContext(), Photos.class));
             }
         });
     }
