@@ -9,7 +9,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,12 +31,10 @@ public class Home extends AppCompatActivity {
     private Context context = this;
     public int selected = -1;
 
-    private MenuInflater menuInflater;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_home,menu);
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
@@ -51,15 +48,15 @@ public class Home extends AppCompatActivity {
                 return true;
 
             case R.id.addAlbumAction:
-                promptAdd();
+                addAlbumAction();
                 return true;
 
             case R.id.editAlbumAction:
-                onEdit();
+                editAlbumAction();
                 return true;
 
             case R.id.deleteAlbumAction:
-                onDelete();
+                deleteAlbumAction();
                 return true;
 
         }
@@ -74,9 +71,7 @@ public class Home extends AppCompatActivity {
         albumLV = (ListView) findViewById(R.id.AlbumListView);
         albumLV.setItemsCanFocus(false);
 
-
-
-        albumOpen();
+        albumOpenListener();
 
         adapter = new ArrayAdapter<>(getApplication(), R.layout.album_row_simple, R.id.albumNameTV, albumNameList);
         albumLV.setAdapter(adapter);
@@ -86,7 +81,7 @@ public class Home extends AppCompatActivity {
     }
 
 
-    public void promptAdd(){
+    public void addAlbumAction(){
         AlertDialog.Builder prompt = new AlertDialog.Builder(this);
         prompt.setTitle("Add New Album");
         prompt.setMessage("Enter the name of the new album.");
@@ -124,7 +119,7 @@ public class Home extends AppCompatActivity {
         prompt.show();
     }
 
-    public void onEdit(){
+    public void editAlbumAction(){
         albumLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -133,13 +128,13 @@ public class Home extends AppCompatActivity {
                 String s = albumLV.getItemAtPosition(position).toString();
                 System.out.println(s);
                 changeAlbumName(s);
-                albumOpen();
+                albumOpenListener();
 
             }
         });
     }
 
-    public void onDelete(){
+    public void deleteAlbumAction(){
         albumLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -158,7 +153,7 @@ public class Home extends AppCompatActivity {
                         albumList.remove(selected);
                         albumNameList.remove(selected);
                         adapter.notifyDataSetChanged();
-                        albumOpen();
+                        albumOpenListener();
                     }
                 });
 
@@ -166,7 +161,7 @@ public class Home extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
-                        albumOpen();
+                        albumOpenListener();
                     }
                 });
 
@@ -175,7 +170,7 @@ public class Home extends AppCompatActivity {
         });
     }
 
-    public void albumOpen() {
+    public void albumOpenListener() {
         albumLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
