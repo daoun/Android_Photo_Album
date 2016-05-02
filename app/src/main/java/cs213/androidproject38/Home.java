@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -16,12 +16,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -35,9 +34,11 @@ public class Home extends AppCompatActivity {
     public static List<Album> albumList = new ArrayList<>();
 
     private static List<String> albumNameList = new ArrayList<>();
-    private ArrayAdapter<String> adapter ;
+    private ArrayAdapter<String> adapter;
     private Context context = this;
     public int selected = -1;
+
+    private static final String TAG = "System.out: ";
 
 
     @Override
@@ -74,12 +75,12 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        File f = new File("users.ser");
-        System.out.println("Current directory: " + System.getProperty("user.dir"));
+        File f = new File(Environment.getExternalStorageDirectory(), "user.bin");
+        System.out.println("Current directory: " + Environment.getExternalStorageDirectory().getPath());
 
         if(f.exists() && !f.isDirectory()) {
             try {
-                FileInputStream fileIn = new FileInputStream("/sdcard/user.ser");
+                FileInputStream fileIn = new FileInputStream(Environment.getExternalStorageDirectory().getPath() + File.separator + "user.bin");
                 ObjectInputStream in = new ObjectInputStream(fileIn);
                 albumList = (List<Album>) in.readObject();
                 in.close();
@@ -107,7 +108,7 @@ public class Home extends AppCompatActivity {
 
         adapter.notifyDataSetChanged();
 
-
+        Log.i(TAG,"onCreate");
     }
 
     public void addAlbumAction(){
@@ -145,6 +146,33 @@ public class Home extends AppCompatActivity {
         });
 
         prompt.show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause");
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "onStop");
+    }
+
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.i(TAG, "onRestart");
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.i(TAG, "onSaveInstanceState");
     }
 
     public void editAlbumAction(){
@@ -248,15 +276,21 @@ public class Home extends AppCompatActivity {
     }
 
     @Override
-    public void onDestroy(){
+    protected void onDestroy(){
 
         super.onDestroy();
 
+        Log.i(TAG, "onDestroy");
+
         try {
 
-            FileOutputStream fileOut = new FileOutputStream("users.ser");
+            String dir = Environment.getExternalStorageDirectory().getPath() + File.separator + "user.bin";
+
+            System.out.println(dir);
+
+            FileOutputStream fileOut = new FileOutputStream(dir);
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(new ArrayList<Album>(albumList));
+            out.writeObject(new ArrayList<>(albumList));
             out.close();
 
             /*
@@ -271,18 +305,6 @@ public class Home extends AppCompatActivity {
             i.printStackTrace();
         }
 
-        /*
-        try {
-            FileOutputStream fileOut = new FileOutputStream("users.ser");
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(albumList);
-            out.close();
-            fileOut.close();
-        }catch(IOException i){
-            i.printStackTrace();
-        }
-
-        */
     }
 
 }
