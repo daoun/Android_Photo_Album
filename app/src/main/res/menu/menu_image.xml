@@ -15,19 +15,6 @@
         android:icon="@mipmap/move_btn_image"
         android:title="add location tag"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/deleteTagAction"
-        android:icon="@mipmap/delete_btn_image"
-        android:title="delete tag"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/displayInfoAction"
-        android:icon="@mipmap/move_btn_image"
-        android:title="display info"
-        app:showAsAction="never" />
-
-
 
 
 
