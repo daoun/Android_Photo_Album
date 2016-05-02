@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -16,6 +17,13 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +73,23 @@ public class Home extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        File f = new File("users.ser");
+        System.out.println("Current directory: " + System.getProperty("user.dir"));
+
+        if(f.exists() && !f.isDirectory()) {
+            try {
+                FileInputStream fileIn = new FileInputStream("/sdcard/user.ser");
+                ObjectInputStream in = new ObjectInputStream(fileIn);
+                albumList = (List<Album>) in.readObject();
+                in.close();
+                fileIn.close();
+            } catch (Exception i) {
+                i.printStackTrace();
+                return;
+            }
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         setTitle("Albums");
@@ -73,13 +98,17 @@ public class Home extends AppCompatActivity {
 
         albumOpenListener();
 
+        for(Album a : albumList){
+            albumNameList.add(a.getName());
+        }
+
         adapter = new ArrayAdapter<>(getApplication(), R.layout.album_row_simple, R.id.albumNameTV, albumNameList);
         albumLV.setAdapter(adapter);
+
         adapter.notifyDataSetChanged();
 
 
     }
-
 
     public void addAlbumAction(){
         AlertDialog.Builder prompt = new AlertDialog.Builder(this);
@@ -98,7 +127,6 @@ public class Home extends AppCompatActivity {
         prompt.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
 
                 name = input.getText().toString();
 
@@ -219,5 +247,42 @@ public class Home extends AppCompatActivity {
         prompt.show();
     }
 
+    @Override
+    public void onDestroy(){
+
+        super.onDestroy();
+
+        try {
+
+            FileOutputStream fileOut = new FileOutputStream("users.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(new ArrayList<Album>(albumList));
+            out.close();
+
+            /*
+            FileOutputStream fos = context.openFileOutput("user.ser", Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(albumList);
+            os.close();
+            fos.close();
+            */
+
+        }catch(Exception i){
+            i.printStackTrace();
+        }
+
+        /*
+        try {
+            FileOutputStream fileOut = new FileOutputStream("users.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(albumList);
+            out.close();
+            fileOut.close();
+        }catch(IOException i){
+            i.printStackTrace();
+        }
+
+        */
+    }
 
 }
