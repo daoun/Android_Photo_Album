@@ -9,20 +9,20 @@ import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.util.Log;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,10 +31,10 @@ public class Home extends AppCompatActivity {
 
     private ListView albumLV;
     private String name;
-    public static List<Album> albumList = new ArrayList<>();
+    public static ArrayList<Album> albumList = new ArrayList<>();
 
     private static List<String> albumNameList = new ArrayList<>();
-    private ArrayAdapter<String> adapter;
+    private ArrayAdapter<Album> adapter;
     private Context context = this;
     public int selected = -1;
 
@@ -82,7 +82,7 @@ public class Home extends AppCompatActivity {
             try {
                 FileInputStream fileIn = new FileInputStream(Environment.getExternalStorageDirectory().getPath() + File.separator + "user.bin");
                 ObjectInputStream in = new ObjectInputStream(fileIn);
-                albumList = (List<Album>) in.readObject();
+                //albumList = (ArrayList<Album>) in.readObject();
                 in.close();
                 fileIn.close();
             } catch (Exception i) {
@@ -103,7 +103,8 @@ public class Home extends AppCompatActivity {
             albumNameList.add(a.getName());
         }
 
-        adapter = new ArrayAdapter<>(getApplication(), R.layout.album_row_simple, R.id.albumNameTV, albumNameList);
+        adapter = new AlbumAdapter<>(this, 1, albumList);
+               // new ArrayAdapter<>(getApplication(), R.layout.album_row_simple, R.id.albumNameTV, albumNameList);
         albumLV.setAdapter(adapter);
 
         adapter.notifyDataSetChanged();
@@ -275,7 +276,7 @@ public class Home extends AppCompatActivity {
         prompt.show();
     }
 
-    @Override
+ /*   @Override
     protected void onDestroy(){
 
         super.onDestroy();
@@ -299,10 +300,43 @@ public class Home extends AppCompatActivity {
             os.writeObject(albumList);
             os.close();
             fos.close();
-            */
+            *
 
         }catch(Exception i){
             i.printStackTrace();
+        }
+
+    }
+*/
+
+    public class AlbumAdapter<T> extends ArrayAdapter<Album> {
+        private Context mContext;
+        private List<Album> list;
+
+        public AlbumAdapter(Context c, int res, ArrayList<Album> list) {
+            super(c, res, list);
+            mContext = c;
+            this.list = list;
+        }
+
+        public int getCount() {
+            return list.size();
+        }
+
+        public Album getItem(int position) {
+            return null;
+        }
+
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        // create a new ImageView for each item referenced by the Adapter
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView textView = new TextView(mContext);
+            textView.setTextSize(30);
+            textView.setText(list.get(position).getName());
+            return textView;
         }
 
     }

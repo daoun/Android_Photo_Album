@@ -11,9 +11,8 @@ public class Album implements Serializable {
 
     private static final long serialVersionUID = 6843591266296171581L;
     private String name;
-    private List<Photo> photolist = new ArrayList<Photo>();
-    private String coverPhoto;
-    private String description;
+    private List<Photo> photolist = new ArrayList<>();
+
 
     public Album(String name){
         this.name = name;
@@ -45,6 +44,14 @@ public class Album implements Serializable {
         this.photolist.remove(index);
     }
 
+    public List<Photo> getPhotolist() {
+        return photolist;
+    }
+
+    public void setPhotolist(List<Photo> photolist) {
+        this.photolist = photolist;
+    }
+
     public String toString(){
         String ret = name +": ";
 
@@ -54,27 +61,6 @@ public class Album implements Serializable {
         return ret;
     }
 
-    public List<Photo> getPhotolist() {
-        return photolist;
-    }
-
-    public void setPhotolist(List<Photo> photolist) {
-        this.photolist = photolist;
-    }
-
-    public void setCoverPhoto(String url){
-        this.coverPhoto = url;
-    }
-    public String getCoverPhoto(){
-        return this.coverPhoto;
-    }
-
-    public void setDescription(String desc){
-        this.description = desc;
-    }
-    public String getDescription(){
-        return this.description;
-    }
 
 }
 

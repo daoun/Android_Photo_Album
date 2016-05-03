@@ -166,6 +166,10 @@ public class Photos extends AppCompatActivity {
                 Uri imageUri = data.getData(); //address of image in sdcard
                 InputStream inputStream; // declare a stream to read the image data from sdcard
 
+
+
+                //java.lang.SecurityException: Permission Denial: reading com.android.providers.media.MediaProvider uri content://media/external/images/media/30 from pid=3274, uid=10058 requires android.permission.READ_EXTERNAL_STORAGE, or grantUriPermission()
+
                 try {
                     inputStream = getContentResolver().openInputStream(imageUri);
                     Bitmap image = BitmapFactory.decodeStream(inputStream);
