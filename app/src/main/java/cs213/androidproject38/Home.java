@@ -78,21 +78,25 @@ public class Home extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         System.out.println(getFilesDir());
+        File f = new File(getFilesDir(), FILENAME);
+            if(f.exists()) {
+                try {
 
-            try {
+                    System.out.println("FILE EXISTS");
+                    FileInputStream fis = context.openFileInput(FILENAME);
+                    ObjectInputStream is = new ObjectInputStream(fis);
+                    user = (User) is.readObject();
+                    albumList = user.getAlbumlist();
+                    System.out.println(user.getAlbum(0).getName());
 
-                System.out.println("FILE EXISTS");
-                FileInputStream fis = context.openFileInput(FILENAME);
-                ObjectInputStream is = new ObjectInputStream(fis);
-                user = (User) is.readObject();
-                albumList = user.getAlbumlist();
-                System.out.println(user.getAlbum(0).getName());
-
-                is.close();
-                fis.close();
-            } catch (Exception i) {
-                i.printStackTrace();
-                return;
+                    is.close();
+                    fis.close();
+                } catch (Exception i) {
+                    i.printStackTrace();
+                    return;
+                }
+            }else{
+                albumList = new ArrayList<Album>();
             }
 
         setContentView(R.layout.activity_home);
@@ -349,7 +353,7 @@ public class Home extends AppCompatActivity {
             os.close();
             fos.close();
 
-            File f = new File(FILENAME);
+            File f = new File(getFilesDir(),FILENAME);
             if(f.exists()){
                 System.out.println("STORED FILE");
             }else{
