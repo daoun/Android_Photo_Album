@@ -110,6 +110,22 @@ public class Photos extends AppCompatActivity {
         });
     }
     public void movePhotoAction(){
+        thumbnailGV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                startActivity(new Intent(getApplicationContext(), MovePhotoAlbumList.class));
+
+                Photo movePhoto = photolist.get(position);
+                photolist.remove(position);
+
+                Home.albumList.get(MovePhotoAlbumList.selected).addPhoto(movePhoto);
+
+            }
+        });
+
+
 
     }
 

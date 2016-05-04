@@ -44,7 +44,6 @@
                 android:value=".Photos" />
         </activity>
         <activity android:name=".SearchResult"
-
             android:launchMode="singleTop"
             android:parentActivityName=".Photos">
 
@@ -56,6 +55,15 @@
                 android:resource="@xml/searchable"/>
 
         </activity>
+        <activity
+            android:name=".MovePhotoAlbumList"
+            android:label="Image View"
+            android:parentActivityName=".Photos">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Photos" />
+        </activity>
+
     </application>
 
 </manifest>
