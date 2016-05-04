@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -22,7 +21,9 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,12 +33,11 @@ public class Home extends AppCompatActivity {
     private ListView albumLV;
     private String name;
     public static User user = new User();
-    public static ArrayList<Album> albumList = new ArrayList<>();
-
-    private static List<String> albumNameList = new ArrayList<>();
+    public static List<Album> albumList;
     private ArrayAdapter<Album> adapter;
     private Context context = this;
     public int selected = -1;
+    public String FILENAME = "user4.ser";
 
     private static final String TAG = "System.out: ";
 
@@ -76,23 +76,25 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        File f = new File(Environment.getExternalStorageDirectory(), "user.bin");
-        System.out.println("Current directory: " + Environment.getExternalStorageDirectory().getPath());
+        super.onCreate(savedInstanceState);
+        System.out.println(getFilesDir());
 
-        if(f.exists() && !f.isDirectory()) {
             try {
-                FileInputStream fileIn = new FileInputStream(Environment.getExternalStorageDirectory().getPath() + File.separator + "user.bin");
-                ObjectInputStream in = new ObjectInputStream(fileIn);
-                //albumList = (ArrayList<Album>) in.readObject();
-                in.close();
-                fileIn.close();
+
+                System.out.println("FILE EXISTS");
+                FileInputStream fis = context.openFileInput(FILENAME);
+                ObjectInputStream is = new ObjectInputStream(fis);
+                user = (User) is.readObject();
+                albumList = user.getAlbumlist();
+                System.out.println(user.getAlbum(0).getName());
+
+                is.close();
+                fis.close();
             } catch (Exception i) {
                 i.printStackTrace();
                 return;
             }
-        }
 
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         setTitle("Albums");
         albumLV = (ListView) findViewById(R.id.AlbumListView);
@@ -100,7 +102,7 @@ public class Home extends AppCompatActivity {
 
         albumOpenListener();
 
-        adapter = new AlbumAdapter<>(this, 1, albumList);
+        adapter = new AlbumAdapter<>(this, 1, (ArrayList<Album>) albumList);
                // new ArrayAdapter<>(getApplication(), R.layout.album_row_simple, R.id.albumNameTV, albumNameList);
         albumLV.setAdapter(adapter);
 
@@ -132,7 +134,8 @@ public class Home extends AppCompatActivity {
                 System.out.println(name);
                 Album album = new Album(name);
                 albumList.add(album);
-                albumNameList.add(name);
+                System.out.println("SIZE OF ALBUMLIST: " + user.getAlbumlistSize());
+                store();
                 adapter.notifyDataSetChanged();
             }
         });
@@ -145,7 +148,7 @@ public class Home extends AppCompatActivity {
 
         prompt.show();
     }
-
+    /*
     @Override
     protected void onPause() {
         super.onPause();
@@ -171,7 +174,7 @@ public class Home extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Log.i(TAG, "onSaveInstanceState");
-    }
+    }*/
 
     public void editAlbumAction(){
         albumLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -183,6 +186,7 @@ public class Home extends AppCompatActivity {
                 System.out.println(s);
                 changeAlbumName(s);
                 albumOpenListener();
+                store();
 
             }
         });
@@ -205,7 +209,7 @@ public class Home extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         albumList.remove(selected);
-                        albumNameList.remove(selected);
+                        store();
                         adapter.notifyDataSetChanged();
                         albumOpenListener();
                     }
@@ -258,7 +262,6 @@ public class Home extends AppCompatActivity {
 
                 name = input.getText().toString();
                 albumList.get(selected).setName(name);
-                albumNameList.set(selected, name);
 
                 adapter.notifyDataSetChanged();
             }
@@ -337,5 +340,26 @@ public class Home extends AppCompatActivity {
         }
 
     }
+
+    public void store(){
+        try {
+            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(user);
+            os.close();
+            fos.close();
+
+            File f = new File(FILENAME);
+            if(f.exists()){
+                System.out.println("STORED FILE");
+            }else{
+                System.out.println("DID NOT STORE FILE");
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
 
 }

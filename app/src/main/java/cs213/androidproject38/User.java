@@ -10,7 +10,7 @@ import java.util.List;
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private List<Album> albumlist = new ArrayList<>();
+    private List<Album> albumlist = new ArrayList<Album>();
 
     public void addAlbum(Album album){
         this.albumlist.add(album);
