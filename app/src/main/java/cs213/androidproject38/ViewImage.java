@@ -2,6 +2,7 @@ package cs213.androidproject38;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -123,7 +124,8 @@ public class ViewImage extends AppCompatActivity {
     }
 
     public void uploadPhotoAndInfo(){
-        photoIV.setImageBitmap(photo.getURL());
+        photoIV.setImageURI(Uri.parse(photo.getURL()));
+        //photoIV.setImageBitmap(photo.getURL());
         locationTV.setText( combineTags(photo.getLocationTaglist()) );
         personTV.setText(combineTags(photo.getPersonTaglist()));
 

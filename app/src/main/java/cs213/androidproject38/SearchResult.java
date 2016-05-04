@@ -3,6 +3,7 @@ package cs213.androidproject38;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -124,7 +125,8 @@ public class SearchResult extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             ImageView iv = new ImageView(mContext);
 
-            iv.setImageBitmap(list.get(position).getURL());
+            iv.setImageURI(Uri.parse(list.get(position).getURL()));
+            //iv.setImageBitmap(list.get(position).getURL());
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(265, 265);
             iv.setLayoutParams(lp);
             iv.setPadding(15, 15, 15, 15);

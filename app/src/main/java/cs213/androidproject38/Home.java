@@ -113,6 +113,7 @@ public class Home extends AppCompatActivity {
                // new ArrayAdapter<>(getApplication(), R.layout.album_row_simple, R.id.albumNameTV, albumNameList);
         albumLV.setAdapter(adapter);
 
+        System.out.println("ADAPTER SET");
         adapter.notifyDataSetChanged();
 
         Log.i(TAG,"onCreate");

@@ -6,8 +6,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,12 +22,9 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -197,7 +192,16 @@ public class Photos extends AppCompatActivity {
             if (requestCode == IMAGE_GALLERY_REQUEST) {//if we are here, we are hearing back from the image gallery
 
                 Uri imageUri = data.getData(); //address of image in sdcard
-                InputStream inputStream; // declare a stream to read the image data from sdcard
+                //System.out.println("photo Uri = " + imageUri);
+                //System.out.println("photo Uri (to string) = " + imageUri.toString());
+                //Uri imagestrinuri = (Uri) Uri.parse(imageUri.toString());
+                Photo pic = new Photo(imageUri.toString());
+                Home.user.getAlbumlist().get(currAlbum).addPhoto(pic);
+                store();
+                adapter.notifyDataSetChanged();
+
+
+                /*   InputStream inputStream; // declare a stream to read the image data from sdcard
 
 
 
@@ -217,6 +221,8 @@ public class Photos extends AppCompatActivity {
                     e.printStackTrace();
                     Toast.makeText(this, "Unable to open image.", Toast.LENGTH_LONG).show();
                 }
+
+                */
             }
         }
 
@@ -250,7 +256,8 @@ public class Photos extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             ImageView iv = new ImageView(mContext);
 
-            iv.setImageBitmap(list.get(position).getURL());
+            iv.setImageURI(Uri.parse(list.get(position).getURL()));
+            //iv.setImageBitmap(list.get(position).getURL());
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(265, 265);
             iv.setLayoutParams(lp);
             iv.setPadding(15, 15, 15, 15);

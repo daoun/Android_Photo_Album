@@ -1,7 +1,5 @@
 package cs213.androidproject38;
 
-import android.graphics.Bitmap;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +13,16 @@ public class Photo implements Serializable {
     private List<String> locationTagList = new ArrayList<>();
     private List<String> personTagList = new ArrayList<>();
 
-    private Bitmap url;
+    private String url;
 
-    public Photo(Bitmap url){
+    public Photo(String url){
         this.url = url;
     }
 
-    public Bitmap getURL() {
+    public String getURL() {
         return url;
     }
-    public void setURL(Bitmap url) {
+    public void setURL(String url) {
         this.url = url;
     }
 
