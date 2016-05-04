@@ -40,7 +40,7 @@ public class Photos extends AppCompatActivity {
 
     ArrayList<Photo> photolist;
     private ImageAdapter<Photo> adapter;
-    private int selected = -1;
+    public static int selected = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,15 +111,10 @@ public class Photos extends AppCompatActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                selected = position;
                 startActivity(new Intent(getApplicationContext(), MovePhotoAlbumList.class));
-                finish();
-                Photo movePhoto = photolist.get(position);
-                photolist.remove(position);
 
-                Home.user.getAlbumlist().get(MovePhotoAlbumList.selected).addPhoto(movePhoto);
 
-                store();
 
             }
         });

@@ -57,8 +57,7 @@
         </activity>
         <activity
             android:name=".MovePhotoAlbumList"
-            android:label="Image View"
-            android:parentActivityName=".Photos">
+            android:label="Image View">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Photos" />
