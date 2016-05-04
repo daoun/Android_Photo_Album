@@ -3,11 +3,10 @@ package cs213.androidproject38;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -27,28 +26,30 @@ public class SearchResult extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        System.out.print("***** START OF ONCREATE *****");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
         photolist = (ArrayList<Photo>) Home.albumList.get(Photos.currAlbum).getPhotolist();
         adapter = new ImageAdapter<>(this, 1, searchResult);
 
         handleIntent(getIntent());
-        photoOpenListener();
+
     }
 
 
 
 
-
+/*
     @Override
     protected void onNewIntent(Intent intent) {
-        setIntent(intent);
+        System.out.print("***** START OF ONNEWINTENT *****");
+        //setIntent(intent);
         handleIntent(intent);
     }
+    */
 
     private void handleIntent(Intent intent) {
-
+        System.out.print("***** START OF HANDLEINTENT *****");
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             //use the query to search your data somehow
@@ -57,7 +58,7 @@ public class SearchResult extends AppCompatActivity {
     }
 
     private void showSearchResults(String query){
-
+        System.out.print("***** START OF SHOWSEARCHRESULTS *****");
         searchResultGV = (GridView) findViewById(R.id.searchResultGV);
         setTitle("Search Result for: " + query);
         query = query.toLowerCase();
@@ -70,34 +71,32 @@ public class SearchResult extends AppCompatActivity {
     }
 
     private void getPhotoList(String query){
-
+        System.out.print("***** START OF GETPHOTOLIST *****");
         for(Photo p : photolist){
             for(String s : p.getLocationTaglist()){
+                System.out.print(s+" ");
                 if(s.toLowerCase().contains(query)){
+                    System.out.print("***** ADDED *****"+s+"*****");
                     searchResult.add(p);
                     break;
                 }
             }
-
+            System.out.println();
             for(String s : p.getPersonTaglist()){
+                System.out.print(s+" ");
                 if(s.toLowerCase().contains(query)){
+                    System.out.print("***** ADDED *****"+s+"*****");
                     searchResult.add(p);
                     break;
                 }
             }
+            System.out.println();
         }
+
+        System.out.println(searchResult);
     }
 
-    public void photoOpenListener() {
-        searchResultGV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selected = position;
-                ViewImage.currPhoto = position;
-                startActivity(new Intent(getApplicationContext(), ViewImage.class));
-            }
-        });
-    }
+
 
     public class ImageAdapter<T> extends ArrayAdapter<Photo> {
         private Context mContext;
