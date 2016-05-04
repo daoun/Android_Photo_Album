@@ -29,7 +29,7 @@ public class SearchResult extends AppCompatActivity {
         System.out.print("***** START OF ONCREATE *****");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
-        photolist = (ArrayList<Photo>) Home.albumList.get(Photos.currAlbum).getPhotolist();
+        photolist = (ArrayList<Photo>) Home.user.getAlbumlist().get(Photos.currAlbum).getPhotolist();
         adapter = new ImageAdapter<>(this, 1, searchResult);
 
         handleIntent(getIntent());

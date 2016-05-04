@@ -28,7 +28,9 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,8 +52,8 @@ public class Photos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photos);
         thumbnailGV = (GridView) findViewById(R.id.thumbnails);
-        setTitle(Home.albumList.get(currAlbum).getName());
-        photolist = (ArrayList<Photo>) Home.albumList.get(currAlbum).getPhotolist();
+        setTitle(Home.user.getAlbumlist().get(currAlbum).getName());
+        photolist = (ArrayList<Photo>) Home.user.getAlbumlist().get(currAlbum).getPhotolist();
 
         adapter = new ImageAdapter<>(this, 1, photolist);
         thumbnailGV.setAdapter(adapter);
@@ -116,11 +118,13 @@ public class Photos extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 startActivity(new Intent(getApplicationContext(), MovePhotoAlbumList.class));
-
+                finish();
                 Photo movePhoto = photolist.get(position);
                 photolist.remove(position);
 
-                Home.albumList.get(MovePhotoAlbumList.selected).addPhoto(movePhoto);
+                Home.user.getAlbumlist().get(MovePhotoAlbumList.selected).addPhoto(movePhoto);
+
+                store();
 
             }
         });
@@ -145,6 +149,7 @@ public class Photos extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         photolist.remove(selected);
+                        store();
                         adapter.notifyDataSetChanged();
                         photoOpenListener();
                     }
@@ -203,7 +208,8 @@ public class Photos extends AppCompatActivity {
                     Bitmap image = BitmapFactory.decodeStream(inputStream);
                     // add photo to array list
                     Photo pic = new Photo(image);
-                    Home.albumList.get(currAlbum).addPhoto(pic);
+                    Home.user.getAlbumlist().get(currAlbum).addPhoto(pic);
+                    store();
                     adapter.notifyDataSetChanged();
                     //addPhotoToGV(image);
 
@@ -252,6 +258,26 @@ public class Photos extends AppCompatActivity {
             return iv;
         }
 
+    }
+
+    public void store(){
+        try {
+            FileOutputStream fos = context.openFileOutput(Home.FILENAME, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(Home.user);
+            os.close();
+            fos.close();
+
+            File f = new File(getFilesDir(),Home.FILENAME);
+            if(f.exists()){
+                System.out.println("STORED FILE");
+            }else{
+                System.out.println("DID NOT STORE FILE");
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**

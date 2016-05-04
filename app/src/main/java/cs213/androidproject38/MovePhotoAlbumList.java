@@ -22,10 +22,10 @@ public class MovePhotoAlbumList extends AppCompatActivity {
 
         list = (ListView) findViewById(R.id.movePhotoAlbumList);
 
-        for(int i = 0; i < Home.albumList.size(); i++){
+        for(int i = 0; i < Home.user.getAlbumlist().size(); i++){
             TextView textView = new TextView(this);
             textView.setTextSize(30);
-            textView.setText(Home.albumList.get(i).getName());
+            textView.setText(Home.user.getAlbumlist().get(i).getName());
             list.addView(textView);
         }
 

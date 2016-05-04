@@ -41,7 +41,7 @@ public class ViewImage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_image);
 
-        photo = Home.albumList.get(Photos.currAlbum).getPhoto(currPhoto);
+        photo = Home.user.getAlbumlist().get(Photos.currAlbum).getPhoto(currPhoto);
 
         photoIV = (ImageView) findViewById(R.id.photoIV);
         locationTV = (TextView) findViewById(R.id.locationTagTV);
@@ -99,18 +99,18 @@ public class ViewImage extends AppCompatActivity {
                         } else {
                             currPhoto--;
                         }
-                        photo = Home.albumList.get(Photos.currAlbum).getPhoto(currPhoto);
+                        photo = Home.user.getAlbumlist().get(Photos.currAlbum).getPhoto(currPhoto);
                         uploadPhotoAndInfo();
 
                     }
                     else { // Left swipe action
-                        if(currPhoto == (Home.albumList.get(Photos.currAlbum).getPhotolistSize() - 1)) {
+                        if(currPhoto == (Home.user.getAlbumlist().get(Photos.currAlbum).getPhotolistSize() - 1)) {
                             Toast.makeText(this, "No more pictures to the right", Toast.LENGTH_SHORT).show ();
                             return false;
                         } else {
                             currPhoto++;
                         }
-                        photo = Home.albumList.get(Photos.currAlbum).getPhoto(currPhoto);
+                        photo = Home.user.getAlbumlist().get(Photos.currAlbum).getPhoto(currPhoto);
                         uploadPhotoAndInfo();
                     }
                 }
@@ -149,7 +149,7 @@ public class ViewImage extends AppCompatActivity {
 
                 personTagString = input.getText().toString();
                 personTagList = parseTags(personTagString);
-                Home.albumList.get(Photos.currAlbum).getPhoto(currPhoto).setPersonTaglist(personTagList);
+                Home.user.getAlbumlist().get(Photos.currAlbum).getPhoto(currPhoto).setPersonTaglist(personTagList);
                 personTV.setText(combineTags(personTagList));
             }
         });
@@ -182,7 +182,7 @@ public class ViewImage extends AppCompatActivity {
 
                 locationTagString = input.getText().toString();
                 locationTagList = parseTags(locationTagString);
-                Home.albumList.get(Photos.currAlbum).getPhoto(currPhoto).setLocationTaglist(locationTagList);
+                Home.user.getAlbumlist().get(Photos.currAlbum).getPhoto(currPhoto).setLocationTaglist(locationTagList);
                 locationTV.setText(combineTags(locationTagList));
             }
         });

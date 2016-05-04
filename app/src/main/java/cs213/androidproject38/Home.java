@@ -33,11 +33,10 @@ public class Home extends AppCompatActivity {
     private ListView albumLV;
     private String name;
     public static User user = new User();
-    public static List<Album> albumList = new ArrayList<>();
     private ArrayAdapter<Album> adapter;
     private Context context = this;
     public int selected = -1;
-    public String FILENAME = "user4.ser";
+    public static String FILENAME = "user4.ser";
 
     private static final String TAG = "System.out: ";
 
@@ -86,7 +85,6 @@ public class Home extends AppCompatActivity {
                     FileInputStream fis = context.openFileInput(FILENAME);
                     ObjectInputStream is = new ObjectInputStream(fis);
                     user = (User) is.readObject();
-                    albumList = user.getAlbumlist();
                     System.out.println(user.getAlbum(0).getName());
 
                     is.close();
@@ -111,7 +109,7 @@ public class Home extends AppCompatActivity {
 
         albumOpenListener();
 
-        adapter = new AlbumAdapter<>(this, 1, (ArrayList<Album>) albumList);
+        adapter = new AlbumAdapter<>(this, 1, (ArrayList<Album>) user.getAlbumlist());
                // new ArrayAdapter<>(getApplication(), R.layout.album_row_simple, R.id.albumNameTV, albumNameList);
         albumLV.setAdapter(adapter);
 
@@ -142,7 +140,7 @@ public class Home extends AppCompatActivity {
 
                 System.out.println(name);
                 Album album = new Album(name);
-                albumList.add(album);
+                user.getAlbumlist().add(album);
                 System.out.println("SIZE OF ALBUMLIST: " + user.getAlbumlistSize());
                 store();
                 adapter.notifyDataSetChanged();
@@ -192,10 +190,9 @@ public class Home extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selected = position;
                 System.out.println("position = "+position);
-                System.out.println("album listview = " + albumList);
                 System.out.println("number of elements = "+albumLV.getCount());
                 System.out.println("item at position = "+ albumLV.getItemAtPosition(position));
-                String s = albumList.get(position).getName();
+                String s = user.getAlbumlist().get(position).getName();
                 //String s = albumLV.getItemAtPosition(position).toString();
 
                 System.out.println(s);
@@ -223,7 +220,7 @@ public class Home extends AppCompatActivity {
                 editPrompt.setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        albumList.remove(selected);
+                        user.getAlbumlist().remove(selected);
                         store();
                         adapter.notifyDataSetChanged();
                         albumOpenListener();
@@ -250,6 +247,7 @@ public class Home extends AppCompatActivity {
                 selected = position;
                 Photos.currAlbum = position;
                 System.out.println("POSITION = " + position);
+                store();
                 startActivity(new Intent(getApplicationContext(), Photos.class));
             }
         });
@@ -274,9 +272,8 @@ public class Home extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-
                 name = input.getText().toString();
-                albumList.get(selected).setName(name);
+                user.getAlbumlist().get(selected).setName(name);
 
                 adapter.notifyDataSetChanged();
             }
