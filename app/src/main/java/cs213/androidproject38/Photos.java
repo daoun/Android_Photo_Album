@@ -1,6 +1,8 @@
 package cs213.androidproject38;
 
 import android.app.AlertDialog;
+import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -38,7 +42,7 @@ public class Photos extends AppCompatActivity {
     int option; // 1-move; 2-delete
 
     ArrayList<Photo> photolist;
-    private ImageAdapter<Photo> adapter ;
+    private ImageAdapter<Photo> adapter;
     private int selected = -1;
 
     @Override
@@ -59,6 +63,14 @@ public class Photos extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_photos, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem mSearchMenuItem = menu.findItem(R.id.search);
+        SearchView mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(getApplicationContext(), SearchResult.class)));
+        mSearchView.setIconifiedByDefault(false);
+
         return true;
     }
 

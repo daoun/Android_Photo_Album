@@ -10,19 +10,7 @@ import java.util.List;
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private String name;
     private List<Album> albumlist = new ArrayList<>();
-
-    public User(String name){
-        this.name = name;
-    }
-
-    public String getName(){
-        return name;
-    }
-    public void setName(String name){
-        this.name = name;
-    }
 
     public void addAlbum(Album album){
         this.albumlist.add(album);
@@ -35,10 +23,6 @@ public class User implements Serializable {
     }
     public void remove(int index){
         this.albumlist.remove(index);
-    }
-
-    public String toString(){
-        return name;
     }
 
     public List<Album> getAlbumlist() {

@@ -31,6 +31,7 @@ public class Home extends AppCompatActivity {
 
     private ListView albumLV;
     private String name;
+    public static User user = new User();
     public static ArrayList<Album> albumList = new ArrayList<>();
 
     private static List<String> albumNameList = new ArrayList<>();
@@ -98,10 +99,6 @@ public class Home extends AppCompatActivity {
         albumLV.setItemsCanFocus(false);
 
         albumOpenListener();
-
-        for(Album a : albumList){
-            albumNameList.add(a.getName());
-        }
 
         adapter = new AlbumAdapter<>(this, 1, albumList);
                // new ArrayAdapter<>(getApplication(), R.layout.album_row_simple, R.id.albumNameTV, albumNameList);
