@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Christine on 4/25/16.
- */
 public class Album implements Serializable {
 
     private static final long serialVersionUID = 6843591266296171581L;
@@ -16,12 +13,6 @@ public class Album implements Serializable {
 
     public Album(String name){
         this.name = name;
-        //String base = System.getProperty("user.dir");
-
-        //coverPhoto = "../../../res/drawable/no_photo.png";
-
-        //String relative = new File(base).toURI().relativize(new File(path).toURI()).getPath();
-
     }
 
     public String getName() {
@@ -47,7 +38,6 @@ public class Album implements Serializable {
     public List<Photo> getPhotolist() {
         return photolist;
     }
-
     public void setPhotolist(List<Photo> photolist) {
         this.photolist = photolist;
     }
@@ -60,7 +50,5 @@ public class Album implements Serializable {
         }
         return ret;
     }
-
-
 }
 

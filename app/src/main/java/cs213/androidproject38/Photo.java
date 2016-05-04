@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Christine on 4/25/16.
- */
 public class Photo implements Serializable {
 
     private static final long serialVersionUID = 2651057460302515220L;

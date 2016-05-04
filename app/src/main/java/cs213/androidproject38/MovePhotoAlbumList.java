@@ -15,9 +15,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Christine on 5/4/16.
- */
+
 public class MovePhotoAlbumList extends AppCompatActivity {
 
     ListView listLV;
@@ -39,10 +37,6 @@ public class MovePhotoAlbumList extends AppCompatActivity {
             list.add(Home.user.getAlbum(i).getName());
         }
 
-
-
-
-
         listLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -60,10 +54,8 @@ public class MovePhotoAlbumList extends AppCompatActivity {
             }
         });
 
-
-        adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
+        adapter=new ArrayAdapter<>(this, R.layout.move_photo_listview_item, list);
         listLV.setAdapter(adapter);
-
     }
 
     public void store(){

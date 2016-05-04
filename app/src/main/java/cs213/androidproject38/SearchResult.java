@@ -22,12 +22,9 @@ public class SearchResult extends AppCompatActivity {
     ArrayList<Photo> photolist;
     ArrayList<Photo> searchResult = new ArrayList<>();
     private ImageAdapter<Photo> adapter;
-    private int selected = -1;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.print("***** START OF ONCREATE *****");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
         photolist = (ArrayList<Photo>) Home.user.getAlbumlist().get(Photos.currAlbum).getPhotolist();
@@ -37,29 +34,23 @@ public class SearchResult extends AppCompatActivity {
 
     }
 
-
-
-
-/*
-    @Override
-    protected void onNewIntent(Intent intent) {
-        System.out.print("***** START OF ONNEWINTENT *****");
-        //setIntent(intent);
-        handleIntent(intent);
-    }
-    */
-
+    /**
+     * Starts the search when enter is clicked
+     * @param intent
+     */
     private void handleIntent(Intent intent) {
-        System.out.print("***** START OF HANDLEINTENT *****");
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+       if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             //use the query to search your data somehow
             showSearchResults(query);
         }
     }
 
+    /**
+     * Shows the searched result
+     * @param query the keyword
+     */
     private void showSearchResults(String query){
-        System.out.print("***** START OF SHOWSEARCHRESULTS *****");
         searchResultGV = (GridView) findViewById(R.id.searchResultGV);
         setTitle("Search Result for: " + query);
         query = query.toLowerCase();
@@ -67,38 +58,33 @@ public class SearchResult extends AppCompatActivity {
         getPhotoList(query);
 
         searchResultGV.setAdapter(adapter);
-
-
     }
 
+    /**
+     * Gets the list of photo that has a tag containing the keyword
+     * @param query the keyword
+     */
     private void getPhotoList(String query){
-        System.out.print("***** START OF GETPHOTOLIST *****");
         for(Photo p : photolist){
             for(String s : p.getLocationTaglist()){
-                System.out.print(s+" ");
                 if(s.toLowerCase().contains(query)){
-                    System.out.print("***** ADDED *****"+s+"*****");
                     searchResult.add(p);
                     break;
                 }
             }
-            System.out.println();
             for(String s : p.getPersonTaglist()){
-                System.out.print(s+" ");
                 if(s.toLowerCase().contains(query)){
-                    System.out.print("***** ADDED *****"+s+"*****");
                     searchResult.add(p);
                     break;
                 }
             }
-            System.out.println();
         }
-
-        System.out.println(searchResult);
     }
 
-
-
+    /**
+     * Image Adapter manages the photos listed in the GridView
+     * @param <T>
+     */
     public class ImageAdapter<T> extends ArrayAdapter<Photo> {
         private Context mContext;
         private List<Photo> list;
@@ -126,14 +112,11 @@ public class SearchResult extends AppCompatActivity {
             ImageView iv = new ImageView(mContext);
 
             iv.setImageURI(Uri.parse(list.get(position).getURL()));
-            //iv.setImageBitmap(list.get(position).getURL());
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(265, 265);
             iv.setLayoutParams(lp);
             iv.setPadding(15, 15, 15, 15);
 
             return iv;
         }
-
     }
-
 }

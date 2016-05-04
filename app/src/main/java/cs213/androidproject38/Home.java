@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,8 +37,41 @@ public class Home extends AppCompatActivity {
     public int selected = -1;
     public static String FILENAME = "user4.ser";
 
-    private static final String TAG = "System.out: ";
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 
+        super.onCreate(savedInstanceState);
+        System.out.println(getFilesDir());
+        File f = new File(getFilesDir(), FILENAME);
+        if(f.exists()) {
+            try {
+
+                System.out.println("FILE EXISTS");
+                FileInputStream fis = context.openFileInput(FILENAME);
+                ObjectInputStream is = new ObjectInputStream(fis);
+                user = (User) is.readObject();
+                System.out.println(user.getAlbum(0).getName());
+
+                is.close();
+                fis.close();
+            } catch (Exception i) {
+                i.printStackTrace();
+                return;
+            }
+        }
+
+        setContentView(R.layout.activity_home);
+        setTitle("Albums");
+        albumLV = (ListView) findViewById(R.id.AlbumListView);
+        albumLV.setItemsCanFocus(false);
+
+        albumOpenListener();
+
+        adapter = new AlbumAdapter<>(this, 1, (ArrayList<Album>) user.getAlbumlist());
+        albumLV.setAdapter(adapter);
+
+        adapter.notifyDataSetChanged();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -72,53 +104,9 @@ public class Home extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-        System.out.println(getFilesDir());
-        File f = new File(getFilesDir(), FILENAME);
-            if(f.exists()) {
-                try {
-
-                    System.out.println("FILE EXISTS");
-                    FileInputStream fis = context.openFileInput(FILENAME);
-                    ObjectInputStream is = new ObjectInputStream(fis);
-                    user = (User) is.readObject();
-                    System.out.println(user.getAlbum(0).getName());
-
-                    is.close();
-                    fis.close();
-                } catch (Exception i) {
-                    i.printStackTrace();
-                    return;
-                }
-            }
-            //else{
-                //albumList = new ArrayList<Album>();
-           // }
-
-
-       // albumList = new ArrayList<Album>();
-
-
-        setContentView(R.layout.activity_home);
-        setTitle("Albums");
-        albumLV = (ListView) findViewById(R.id.AlbumListView);
-        albumLV.setItemsCanFocus(false);
-
-        albumOpenListener();
-
-        adapter = new AlbumAdapter<>(this, 1, (ArrayList<Album>) user.getAlbumlist());
-               // new ArrayAdapter<>(getApplication(), R.layout.album_row_simple, R.id.albumNameTV, albumNameList);
-        albumLV.setAdapter(adapter);
-
-        System.out.println("ADAPTER SET");
-        adapter.notifyDataSetChanged();
-
-        Log.i(TAG,"onCreate");
-    }
-
+    /**
+     * Prompts the user for new album name and adds the new album
+     */
     public void addAlbumAction(){
         AlertDialog.Builder prompt = new AlertDialog.Builder(this);
         prompt.setTitle("Add New Album");
@@ -129,7 +117,6 @@ public class Home extends AppCompatActivity {
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setPadding(40, 25, 40, 25);
 
-
         prompt.setView(input);
 
         // Set up the buttons
@@ -138,11 +125,8 @@ public class Home extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
 
                 name = input.getText().toString();
-
-                System.out.println(name);
                 Album album = new Album(name);
                 user.getAlbumlist().add(album);
-                System.out.println("SIZE OF ALBUMLIST: " + user.getAlbumlistSize());
                 store();
                 adapter.notifyDataSetChanged();
             }
@@ -156,47 +140,17 @@ public class Home extends AppCompatActivity {
 
         prompt.show();
     }
-    /*
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.i(TAG, "onPause");
-    }
 
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.i(TAG, "onStop");
-    }
-
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Log.i(TAG, "onRestart");
-    }
-
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.i(TAG, "onSaveInstanceState");
-    }*/
-
+    /**
+     * Allows user to edit the selected album name
+     */
     public void editAlbumAction(){
         albumLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selected = position;
-                System.out.println("position = "+position);
-                System.out.println("number of elements = "+albumLV.getCount());
-                System.out.println("item at position = "+ albumLV.getItemAtPosition(position));
                 String s = user.getAlbumlist().get(position).getName();
-                //String s = albumLV.getItemAtPosition(position).toString();
-
-                System.out.println(s);
                 changeAlbumName(s);
                 albumOpenListener();
                 store();
@@ -205,13 +159,15 @@ public class Home extends AppCompatActivity {
         });
     }
 
+    /**
+     * deletes the selected album from the list
+     */
     public void deleteAlbumAction(){
         albumLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                System.out.println("Clicked position" + position);
                 selected = position;
                 AlertDialog.Builder editPrompt = new AlertDialog.Builder(context);
                 editPrompt.setTitle("Delete Album");
@@ -241,19 +197,25 @@ public class Home extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets up listener on the listview so that selected album opens the photos in the album
+     */
     public void albumOpenListener() {
         albumLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selected = position;
                 Photos.currAlbum = position;
-                System.out.println("POSITION = " + position);
                 store();
                 startActivity(new Intent(getApplicationContext(), Photos.class));
             }
         });
     }
 
+    /**
+     * Prompts the user for name change
+     * @param oldName the original album name
+     */
     public void changeAlbumName(String oldName){
         AlertDialog.Builder prompt = new AlertDialog.Builder(this);
         prompt.setTitle("Edit Album Name");
@@ -289,39 +251,33 @@ public class Home extends AppCompatActivity {
         prompt.show();
     }
 
- /*   @Override
-    protected void onDestroy(){
-
-        super.onDestroy();
-
-        Log.i(TAG, "onDestroy");
-
+    /**
+     * stores all albums information to serialized data file
+     */
+    public void store(){
         try {
-
-            String dir = Environment.getExternalStorageDirectory().getPath() + File.separator + "user.bin";
-
-            System.out.println(dir);
-
-            FileOutputStream fileOut = new FileOutputStream(dir);
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(new ArrayList<>(albumList));
-            out.close();
-
-            /*
-            FileOutputStream fos = context.openFileOutput("user.ser", Context.MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(albumList);
+            os.writeObject(user);
             os.close();
             fos.close();
-            *
 
-        }catch(Exception i){
-            i.printStackTrace();
+            File f = new File(getFilesDir(),FILENAME);
+            if(f.exists()){
+                System.out.println("STORED FILE");
+            }else{
+                System.out.println("DID NOT STORE FILE");
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
         }
-
     }
-*/
 
+    /**
+     * Album Adapter manages the albums listed in ListView
+     * @param <T>
+     */
     public class AlbumAdapter<T> extends ArrayAdapter<Album> {
         private Context mContext;
         private List<Album> list;
@@ -348,31 +304,11 @@ public class Home extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             TextView textView = new TextView(mContext);
             textView.setTextSize(30);
+            textView.setPadding(25,30,25,30);
             textView.setText(list.get(position).getName());
             return textView;
         }
 
     }
-
-    public void store(){
-        try {
-            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(user);
-            os.close();
-            fos.close();
-
-            File f = new File(getFilesDir(),FILENAME);
-            if(f.exists()){
-                System.out.println("STORED FILE");
-            }else{
-                System.out.println("DID NOT STORE FILE");
-            }
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
 
 }

@@ -36,8 +36,6 @@ public class Photos extends AppCompatActivity {
     private GridView thumbnailGV;
     private Context context = this;
 
-    int option; // 1-move; 2-delete
-
     ArrayList<Photo> photolist;
     private ImageAdapter<Photo> adapter;
     public static int selected = -1;
@@ -46,15 +44,14 @@ public class Photos extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photos);
-        thumbnailGV = (GridView) findViewById(R.id.thumbnails);
         setTitle(Home.user.getAlbumlist().get(currAlbum).getName());
+
+        thumbnailGV = (GridView) findViewById(R.id.thumbnails);
         photolist = (ArrayList<Photo>) Home.user.getAlbumlist().get(currAlbum).getPhotolist();
 
         adapter = new ImageAdapter<>(this, 1, photolist);
         thumbnailGV.setAdapter(adapter);
         photoOpenListener();
-
-
     }
 
     @Override
@@ -91,21 +88,27 @@ public class Photos extends AppCompatActivity {
                 deletePhotoAction();
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Sets up GridView listener to open the ImageView of the selected Photo
+     */
     public void photoOpenListener() {
         thumbnailGV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selected = position;
                 ViewImage.currPhoto = position;
-                //System.out.println("POSITION = " + position);
                 startActivity(new Intent(getApplicationContext(), ViewImage.class));
             }
         });
     }
+
+    /**
+     * Moves selected photo from current album to another selected album
+     */
     public void movePhotoAction(){
         thumbnailGV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -113,16 +116,13 @@ public class Photos extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selected = position;
                 startActivity(new Intent(getApplicationContext(), MovePhotoAlbumList.class));
-
-
-
             }
         });
-
-
-
     }
 
+    /**
+     * Deletes the selected photo from the album
+     */
     public void deletePhotoAction(){
         thumbnailGV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -160,7 +160,7 @@ public class Photos extends AppCompatActivity {
 
 
     /**
-     * called when add photo action button is clicked
+     * Adds a new photo to the album
      */
     public void addPhotoAction() {
         openGallery();
@@ -187,44 +187,42 @@ public class Photos extends AppCompatActivity {
             if (requestCode == IMAGE_GALLERY_REQUEST) {//if we are here, we are hearing back from the image gallery
 
                 Uri imageUri = data.getData(); //address of image in sdcard
-                //System.out.println("photo Uri = " + imageUri);
-                //System.out.println("photo Uri (to string) = " + imageUri.toString());
-                //Uri imagestrinuri = (Uri) Uri.parse(imageUri.toString());
                 Photo pic = new Photo(imageUri.toString());
                 Home.user.getAlbumlist().get(currAlbum).addPhoto(pic);
                 store();
                 adapter.notifyDataSetChanged();
-
-
-                /*   InputStream inputStream; // declare a stream to read the image data from sdcard
-
-
-
-                //java.lang.SecurityException: Permission Denial: reading com.android.providers.media.MediaProvider uri content://media/external/images/media/30 from pid=3274, uid=10058 requires android.permission.READ_EXTERNAL_STORAGE, or grantUriPermission()
-
-                try {
-                    inputStream = getContentResolver().openInputStream(imageUri);
-                    Bitmap image = BitmapFactory.decodeStream(inputStream);
-                    // add photo to array list
-                    Photo pic = new Photo(image);
-                    Home.user.getAlbumlist().get(currAlbum).addPhoto(pic);
-                    store();
-                    adapter.notifyDataSetChanged();
-                    //addPhotoToGV(image);
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, "Unable to open image.", Toast.LENGTH_LONG).show();
-                }
-
-                */
             }
         }
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Stores all albums information to serialized data file
+     */
+    public void store(){
+        try {
+            FileOutputStream fos = context.openFileOutput(Home.FILENAME, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(Home.user);
+            os.close();
+            fos.close();
 
+            File f = new File(getFilesDir(),Home.FILENAME);
+            if(f.exists()){
+                System.out.println("STORED FILE");
+            }else{
+                System.out.println("DID NOT STORE FILE");
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Image Adapter manages the photos listed in the GridView
+     * @param <T>
+     */
     public class ImageAdapter<T> extends ArrayAdapter<Photo> {
         private Context mContext;
         private List<Photo> list;
@@ -250,9 +248,7 @@ public class Photos extends AppCompatActivity {
         // create a new ImageView for each item referenced by the Adapter
         public View getView(int position, View convertView, ViewGroup parent) {
             ImageView iv = new ImageView(mContext);
-
             iv.setImageURI(Uri.parse(list.get(position).getURL()));
-            //iv.setImageBitmap(list.get(position).getURL());
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(265, 265);
             iv.setLayoutParams(lp);
             iv.setPadding(15, 15, 15, 15);
@@ -262,41 +258,4 @@ public class Photos extends AppCompatActivity {
 
     }
 
-    public void store(){
-        try {
-            FileOutputStream fos = context.openFileOutput(Home.FILENAME, Context.MODE_PRIVATE);
-            ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(Home.user);
-            os.close();
-            fos.close();
-
-            File f = new File(getFilesDir(),Home.FILENAME);
-            if(f.exists()){
-                System.out.println("STORED FILE");
-            }else{
-                System.out.println("DID NOT STORE FILE");
-            }
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * adds photo to the grid layout
-     * @param image
-     */
- /*   public void addPhotoToGV(Bitmap image) {
-        ImageView iv = new ImageView(this);
-
-        iv.setImageBitmap(image);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(265, 265);
-        // iv.setLayoutParams(lp);
-        iv.setPadding(15, 15, 15, 15);
-
-
-        thumbnailGV.addView(iv, lp);
-        // thumbnailGV.addView(iv);
-    }
-*/
 }

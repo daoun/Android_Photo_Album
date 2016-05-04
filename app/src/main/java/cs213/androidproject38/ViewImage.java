@@ -1,6 +1,7 @@
 package cs213.androidproject38;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,15 +16,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ViewImage extends AppCompatActivity {
-    //Test
+
     ImageView photoIV;
 
     public static int currPhoto;
-    
+    private Context context = this;
     private Photo photo;
     String personTagString;
     List<String> personTagList = new ArrayList<>();
@@ -32,7 +36,6 @@ public class ViewImage extends AppCompatActivity {
 
     TextView locationTV;
     TextView personTV;
-
 
     private float x1,x2;
     static final int MIN_DISTANCE = 150;
@@ -74,9 +77,7 @@ public class ViewImage extends AppCompatActivity {
             case R.id.addLocationTagAction:
                 addLocationTagAction();
                 return true;
-
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -115,9 +116,6 @@ public class ViewImage extends AppCompatActivity {
                         uploadPhotoAndInfo();
                     }
                 }
-                else {
-                    // consider as something else - a screen tap for example
-                }
                 break;
         }
         return super.onTouchEvent(event);
@@ -125,7 +123,6 @@ public class ViewImage extends AppCompatActivity {
 
     public void uploadPhotoAndInfo(){
         photoIV.setImageURI(Uri.parse(photo.getURL()));
-        //photoIV.setImageBitmap(photo.getURL());
         locationTV.setText( combineTags(photo.getLocationTaglist()) );
         personTV.setText(combineTags(photo.getPersonTaglist()));
 
@@ -153,6 +150,7 @@ public class ViewImage extends AppCompatActivity {
                 personTagList = parseTags(personTagString);
                 Home.user.getAlbumlist().get(Photos.currAlbum).getPhoto(currPhoto).setPersonTaglist(personTagList);
                 personTV.setText(combineTags(personTagList));
+                store();
             }
         });
         prompt.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -186,6 +184,7 @@ public class ViewImage extends AppCompatActivity {
                 locationTagList = parseTags(locationTagString);
                 Home.user.getAlbumlist().get(Photos.currAlbum).getPhoto(currPhoto).setLocationTaglist(locationTagList);
                 locationTV.setText(combineTags(locationTagList));
+                store();
             }
         });
         prompt.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -223,5 +222,28 @@ public class ViewImage extends AppCompatActivity {
         }
 
         return result;
+    }
+
+    /**
+     * Stores all albums information to serialized data file
+     */
+    public void store(){
+        try {
+            FileOutputStream fos = context.openFileOutput(Home.FILENAME, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(Home.user);
+            os.close();
+            fos.close();
+
+            File f = new File(getFilesDir(),Home.FILENAME);
+            if(f.exists()){
+                System.out.println("STORED FILE");
+            }else{
+                System.out.println("DID NOT STORE FILE");
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
