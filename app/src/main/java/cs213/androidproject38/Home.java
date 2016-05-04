@@ -33,7 +33,7 @@ public class Home extends AppCompatActivity {
     private ListView albumLV;
     private String name;
     public static User user = new User();
-    public static List<Album> albumList;
+    public static List<Album> albumList = new ArrayList<>();
     private ArrayAdapter<Album> adapter;
     private Context context = this;
     public int selected = -1;
@@ -95,9 +95,14 @@ public class Home extends AppCompatActivity {
                     i.printStackTrace();
                     return;
                 }
-            }else{
-                albumList = new ArrayList<Album>();
             }
+            //else{
+                //albumList = new ArrayList<Album>();
+           // }
+
+
+       // albumList = new ArrayList<Album>();
+
 
         setContentView(R.layout.activity_home);
         setTitle("Albums");
@@ -186,7 +191,13 @@ public class Home extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selected = position;
-                String s = albumLV.getItemAtPosition(position).toString();
+                System.out.println("position = "+position);
+                System.out.println("album listview = " + albumList);
+                System.out.println("number of elements = "+albumLV.getCount());
+                System.out.println("item at position = "+ albumLV.getItemAtPosition(position));
+                String s = albumList.get(position).getName();
+                //String s = albumLV.getItemAtPosition(position).toString();
+
                 System.out.println(s);
                 changeAlbumName(s);
                 albumOpenListener();
