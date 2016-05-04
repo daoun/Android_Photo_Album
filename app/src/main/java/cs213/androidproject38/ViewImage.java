@@ -8,9 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,9 @@ public class ViewImage extends AppCompatActivity {
     TextView personTV;
 
 
+    private float x1,x2;
+    static final int MIN_DISTANCE = 150;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,13 +44,10 @@ public class ViewImage extends AppCompatActivity {
         photo = Home.albumList.get(Photos.currAlbum).getPhoto(currPhoto);
 
         photoIV = (ImageView) findViewById(R.id.photoIV);
-        photoIV.setImageBitmap(photo.getURL());
-
         locationTV = (TextView) findViewById(R.id.locationTagTV);
-        locationTV.setText( combineTags(photo.getLocationTaglist()) );
-
         personTV = (TextView) findViewById(R.id.personTagTV);
-        personTV.setText( combineTags(photo.getPersonTaglist()) );
+
+        uploadPhotoAndInfo();
 
 
     }
@@ -77,6 +79,55 @@ public class ViewImage extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch(event.getAction())
+        {
+            case MotionEvent.ACTION_DOWN:
+                x1 = event.getX();
+                break;
+            case MotionEvent.ACTION_UP:
+                x2 = event.getX();
+                float deltaX = x2 - x1;
+
+                if (Math.abs(deltaX) > MIN_DISTANCE) {
+
+                    if (x2 > x1) { // Right swipe action
+                        if(currPhoto == 0) {
+                            Toast.makeText(this, "No more pictures to the left", Toast.LENGTH_SHORT).show ();
+                            return false;
+                        } else {
+                            currPhoto--;
+                        }
+                        photo = Home.albumList.get(Photos.currAlbum).getPhoto(currPhoto);
+                        uploadPhotoAndInfo();
+
+                    }
+                    else { // Left swipe action
+                        if(currPhoto == (Home.albumList.get(Photos.currAlbum).getPhotolistSize() - 1)) {
+                            Toast.makeText(this, "No more pictures to the right", Toast.LENGTH_SHORT).show ();
+                            return false;
+                        } else {
+                            currPhoto++;
+                        }
+                        photo = Home.albumList.get(Photos.currAlbum).getPhoto(currPhoto);
+                        uploadPhotoAndInfo();
+                    }
+                }
+                else {
+                    // consider as something else - a screen tap for example
+                }
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    public void uploadPhotoAndInfo(){
+        photoIV.setImageBitmap(photo.getURL());
+        locationTV.setText( combineTags(photo.getLocationTaglist()) );
+        personTV.setText(combineTags(photo.getPersonTaglist()));
+
+    }
 
     public void addPersonTagAction(){
         AlertDialog.Builder prompt = new AlertDialog.Builder(this);
@@ -148,7 +199,6 @@ public class ViewImage extends AppCompatActivity {
     public List<String> parseTags(String input){
         List<String> result = new ArrayList<>();
 
-
         input=input.replaceAll("\\s+","");
         input=input.replaceAll("\\s","");
 
@@ -160,8 +210,6 @@ public class ViewImage extends AppCompatActivity {
                 result.remove(i);
             }
         }
-
-
         return result;
     }
 
@@ -174,8 +222,4 @@ public class ViewImage extends AppCompatActivity {
 
         return result;
     }
-
-
-
-
 }

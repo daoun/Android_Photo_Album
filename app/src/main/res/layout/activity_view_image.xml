@@ -9,6 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:id="@+id/viewImageLL"
     tools:context="cs213.androidproject38.ViewImage" >
 
 
@@ -17,7 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:src="@drawable/camera"
-        android:id="@+id/photoIV" />
+        android:id="@+id/photoIV"
+        android:imeOptions="actionSearch"/>
 
     <TextView
         android:layout_width="match_parent"
